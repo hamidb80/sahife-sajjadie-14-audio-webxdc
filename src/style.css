@@ -1,0 +1,334 @@
+/* ---------- base & reset ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("/fonts/Vazirmatn-VariableFont_wght.ttf")
+        format("truetype-variations");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    font-family: "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
+    background: #ffffff;
+    color: #000000;
+    padding: 1.5rem 1rem;
+    direction: rtl;
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ---------- theme bar ---------- */
+.theme-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.theme-btn {
+    background: #ffffff;
+    border: 2px solid #000000;
+    padding: 0.5rem 1.2rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #000000;
+    cursor: pointer;
+    transition:
+        background 0.2s,
+        color 0.2s,
+        border-color 0.2s;
+}
+
+.theme-btn:hover {
+    opacity: 0.85;
+}
+
+/* ---------- header ---------- */
+.header-card {
+    border: 2px solid #000000;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s;
+}
+
+.arabic-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 2.1rem;
+    color: #000000;
+    margin-bottom: 0.75rem;
+    word-break: break-word;
+}
+
+.persian-title {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #000000;
+    border-right: 4px solid #000000;
+    padding-right: 1rem;
+    transition: border-color 0.2s;
+}
+
+/* ---------- sections ---------- */
+.sections-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.section-card {
+    background: #ffffff;
+    border: 2px solid #000000;
+    padding: 1.5rem;
+    transition:
+        background 0.2s,
+        border-color 0.2s;
+}
+
+.section-number {
+    display: inline-block;
+    background: #000000;
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.2rem 0.9rem;
+    margin-bottom: 1rem;
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+.arabic-text {
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 2.2rem;
+    color: #000000;
+    margin-bottom: 1rem;
+    word-break: break-word;
+    text-align: right;
+    transition: color 0.2s;
+}
+
+.persian-text {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.9rem;
+    color: #000000;
+    background: #ffffff;
+    padding: 1rem 1.2rem;
+    border-right: 4px solid #000000;
+    text-align: right;
+    word-break: break-word;
+    transition:
+        background 0.2s,
+        color 0.2s,
+        border-color 0.2s;
+}
+
+/* hide based on view mode */
+.section-card.only-arabic .persian-text {
+    display: none;
+}
+
+.section-card.only-persian .arabic-text {
+    display: none;
+}
+
+/* ---------- footer ---------- */
+.footer-note {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: #000000;
+    border-top: 2px solid #000000;
+    padding-top: 1.2rem;
+    transition:
+        color 0.2s,
+        border-color 0.2s;
+}
+
+/* =====================================================
+   DARK THEME
+   ===================================================== */
+html.dark body {
+    background: #121212;
+    color: #f0f0f0;
+}
+
+html.dark .theme-btn {
+    background: #1e1e1e;
+    color: #f0f0f0;
+    border-color: #f0f0f0;
+}
+
+html.dark .header-card {
+    border-color: #f0f0f0;
+}
+
+html.dark .arabic-title {
+    color: #f0f0f0;
+}
+
+html.dark .persian-title {
+    color: #f0f0f0;
+    border-right-color: #f0f0f0;
+}
+
+html.dark .section-card {
+    background: #1e1e1e;
+    border-color: #f0f0f0;
+}
+
+html.dark .section-number {
+    background: #f0f0f0;
+    color: #121212;
+}
+
+html.dark .arabic-text {
+    color: #f0f0f0;
+}
+
+html.dark .persian-text {
+    background: #262626;
+    color: #f0f0f0;
+    border-right-color: #f0f0f0;
+}
+
+html.dark .footer-note {
+    color: #b0b0b0;
+    border-top-color: #f0f0f0;
+}
+
+/* ---------- theme bar (updated for two groups) ---------- */
+.theme-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.font-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.font-label {
+    min-width: 3.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: inherit;
+}
+
+.theme-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ---------- font scaling ---------- */
+/* All text sizes are multiplied by --font-scale (default 1). */
+.arabic-title {
+    font-size: calc(1.4rem * var(--font-scale, 1));
+    line-height: calc(2.1rem * var(--font-scale, 1));
+}
+
+.persian-title {
+    font-size: calc(1rem * var(--font-scale, 1));
+}
+
+.arabic-text {
+    font-size: calc(1.3rem * var(--font-scale, 1));
+    line-height: calc(2.2rem * var(--font-scale, 1));
+}
+
+.persian-text {
+    font-size: calc(1rem * var(--font-scale, 1));
+    line-height: calc(1.9rem * var(--font-scale, 1));
+}
+
+.section-number,
+.footer-note {
+    font-size: calc(0.85rem * var(--font-scale, 1));
+}
+
+/* ---------- audio player ---------- */
+.audio-card {
+    border: 2px solid #000000;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
+    background: #ffffff;
+    transition:
+        background 0.2s,
+        border-color 0.2s;
+}
+
+.audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.play-btn {
+    min-width: 3rem;
+    font-size: 1rem;
+    padding: 0.5rem 0.8rem;
+}
+
+.audio-time {
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-width: 3.5rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.audio-seek {
+    flex: 1;
+    min-width: 120px;
+    accent-color: #000000;
+    cursor: pointer;
+}
+
+.audio-speed {
+    background: #ffffff;
+    border: 2px solid #000000;
+    padding: 0.4rem 0.6rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #000000;
+    cursor: pointer;
+}
+
+/* dark theme */
+html.dark .audio-card {
+    background: #1e1e1e;
+    border-color: #f0f0f0;
+}
+
+html.dark .audio-speed {
+    background: #1e1e1e;
+    color: #f0f0f0;
+    border-color: #f0f0f0;
+}
+
+html.dark .audio-seek {
+    accent-color: #f0f0f0;
+}

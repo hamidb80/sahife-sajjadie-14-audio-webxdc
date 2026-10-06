@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>دعای امام سجاد (ع) — هنگام ستم</title>
+        <script src="/src/data.js"></script>
+        <script defer src="/src/alpine.min.js"></script>
+        <link href="/src/style.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div
+            class="container"
+            x-data="prayerApp()"
+            x-init="init()"
+            :style="`--font-scale: ${fontScale}`"
+        >
+            <!-- Toolbar: font size + theme -->
+            <div class="theme-bar">
+                <div class="font-controls">
+                    <button
+                        class="theme-btn"
+                        @click="decreaseFont()"
+                        :disabled="fontScale <= 0.8"
+                        title="کوچک‌تر"
+                    >
+                        A−
+                    </button>
+                    <span
+                        class="font-label"
+                        x-text="Math.round(fontScale * 100) + '%'"
+                    ></span>
+                    <button
+                        class="theme-btn"
+                        @click="increaseFont()"
+                        :disabled="fontScale >= 1.6"
+                        title="بزرگ‌تر"
+                    >
+                        A+
+                    </button>
+                    <button
+                        class="theme-btn"
+                        @click="resetFont()"
+                        title="بازنشانی"
+                    >
+                        ↺
+                    </button>
+                </div>
+
+                <button @click="toggleTheme()" class="theme-btn">
+                    <span x-show="!dark">🌙 حالت تاریک</span>
+                    <span x-show="dark">☀️ حالت روشن</span>
+                </button>
+            </div>
+
+            <!-- Audio player -->
+            <div class="audio-card">
+                <audio
+                    x-ref="audio"
+                    :src="audioSrc"
+                    preload="metadata"
+                    @timeupdate="onTimeUpdate()"
+                    @loadedmetadata="onLoadedMetadata()"
+                    @ended="playing = false"
+                ></audio>
+
+                <div class="audio-controls">
+                    <span
+                        class="audio-time"
+                        x-text="formatTime(duration)"
+                    ></span>
+
+                    <select
+                        class="audio-speed"
+                        x-model.number="playbackRate"
+                        @change="applyRate()"
+                        :disabled="!audioReady"
+                    >
+                        <template x-for="rate in speedOptions" :key="rate">
+                            <option
+                                :value="rate"
+                                x-text="speedLabel(rate)"
+                            ></option>
+                        </template>
+                    </select>
+
+                    <input
+                        type="range"
+                        class="audio-seek"
+                        min="0"
+                        dir="ltr"
+                        :max="duration || 0"
+                        step="0.1"
+                        x-model.number="currentTime"
+                        @input="seek()"
+                        :disabled="!audioReady"
+                    />
+
+                    <button
+                        class="theme-btn play-btn"
+                        @click="togglePlay()"
+                        :disabled="!audioReady"
+                    >
+                        <span x-show="!playing">▶</span>
+                        <span x-show="playing">❚❚</span>
+                    </button>
+
+                    <span
+                        class="audio-time"
+                        x-text="formatTime(currentTime)"
+                    ></span>
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header-card">
+                <div class="arabic-title" x-text="title.arabic"></div>
+                <div class="persian-title" x-text="title.persian"></div>
+            </div>
+
+            <!-- Sections list -->
+            <div class="sections-wrapper">
+                <template x-for="item in sections" :key="item.number">
+                    <div class="section-card">
+                        <span
+                            class="section-number"
+                            x-text="'فراز ' + toArabicDigits(item.number)"
+                        ></span>
+                        <div class="arabic-text" x-text="item.arabic"></div>
+                        <div class="persian-text" x-text="item.persian"></div>
+                    </div>
+                </template>
+            </div>
+
+            <div class="footer-note">
+                دعای امام سجاد (ع) — هنگام ستم‌دیدگی · ترجمهٔ فارسی
+            </div>
+        </div>
+
+        <script>
+            function prayerApp() {
+                return {
+                    dark: false,
+                    fontScale: 1,
+
+                    title: {
+                        arabic: "وَ كَانَ مِنْ دُعَائِهِ عَلَيْهِ السَّلَامُ إِذَا اعْتُدِيَ عَلَيْهِ أَوْ رَأَي مِنَ الظَّالِمِينَ مَا لَا يُحِبُّ",
+                        persian:
+                            "دعای آن حضرت هرگاه بر او ستم می‌شد یا چیزی را که از ستمگران خوش نداشت مشاهده می‌کرد",
+                    },
+
+                    get sections() {
+                        return window.ayat || []
+                    },
+
+                    init() {
+                        // theme
+                        if (localStorage.getItem("theme") === "dark") {
+                            this.dark = true
+                            document.documentElement.classList.add("dark")
+                        }
+                        // font scale
+                        const savedScale = parseFloat(
+                            localStorage.getItem("fontScale"),
+                        )
+                        if (!isNaN(savedScale)) {
+                            this.fontScale = Math.min(
+                                1.6,
+                                Math.max(0.8, savedScale),
+                            )
+                        }
+                    },
+
+                    toArabicDigits(input) {
+                        const map = [
+                            "٠",
+                            "١",
+                            "٢",
+                            "٣",
+                            "٤",
+                            "٥",
+                            "٦",
+                            "٧",
+                            "٨",
+                            "٩",
+                        ]
+                        return String(input).replace(/[0-9]/g, (d) => map[+d])
+                    },
+
+                    toggleTheme() {
+                        this.dark = !this.dark
+                        document.documentElement.classList.toggle(
+                            "dark",
+                            this.dark,
+                        )
+                        localStorage.setItem(
+                            "theme",
+                            this.dark ? "dark" : "light",
+                        )
+                    },
+
+                    increaseFont() {
+                        this.fontScale = Math.min(
+                            1.6,
+                            +(this.fontScale + 0.1).toFixed(2),
+                        )
+                        localStorage.setItem("fontScale", this.fontScale)
+                    },
+
+                    decreaseFont() {
+                        this.fontScale = Math.max(
+                            0.8,
+                            +(this.fontScale - 0.1).toFixed(2),
+                        )
+                        localStorage.setItem("fontScale", this.fontScale)
+                    },
+
+                    resetFont() {
+                        this.fontScale = 1
+                        localStorage.setItem("fontScale", 1)
+                    },
+
+                    // state
+                    audioSrc: "/assets/audio.mp3", // ← change to your file path
+                    playing: false,
+                    currentTime: 0,
+                    duration: 0,
+                    playbackRate: 1,
+                    audioReady: false,
+
+                    speedOptions: [0.75, 1, 1.25, 1.5, 1.75, 2],
+
+                    speedLabel(rate) {
+                        // replace the Latin decimal separator with the Arabic one
+                        const text = String(rate).replace(".", "٫")
+                        return this.toArabicDigits(text) + "×"
+                    },
+
+                    // methods
+                    togglePlay() {
+                        const audio = this.$refs.audio
+                        if (!audio) return
+                        if (audio.paused) {
+                            audio.play()
+                            this.playing = true
+                        } else {
+                            audio.pause()
+                            this.playing = false
+                        }
+                    },
+
+                    onTimeUpdate() {
+                        const audio = this.$refs.audio
+                        if (audio && !this.seeking) {
+                            this.currentTime = audio.currentTime
+                        }
+                    },
+
+                    onLoadedMetadata() {
+                        const audio = this.$refs.audio
+                        if (!audio) return
+                        this.duration = audio.duration || 0
+                        this.audioReady = true
+                        // enable pitch-preserving speedup
+                        audio.preservesPitch = true
+                        audio.mozPreservesPitch = true
+                        audio.webkitPreservesPitch = true
+                        audio.playbackRate = this.playbackRate
+                    },
+
+                    seek() {
+                        const audio = this.$refs.audio
+                        if (!audio) return
+                        audio.currentTime = this.currentTime
+                    },
+
+                    applyRate() {
+                        const audio = this.$refs.audio
+                        if (!audio) return
+                        audio.playbackRate = this.playbackRate
+                    },
+
+                    formatTime(seconds) {
+                        if (!seconds || isNaN(seconds)) return "٠:٠٠"
+                        const m = Math.floor(seconds / 60)
+                        const s = Math.floor(seconds % 60)
+                        return (
+                            this.toArabicDigits(m) +
+                            ":" +
+                            this.toArabicDigits(String(s).padStart(2, "0"))
+                        )
+                    },
+                }
+            }
+        </script>
+    </body>
+</html>
